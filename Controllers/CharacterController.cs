@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using dotnet_rpg.Models;
-
+using dotnet_rpg.Services.CharacterService;
 
 namespace dotnet_rpg.Controllers
 {
@@ -12,30 +12,32 @@ namespace dotnet_rpg.Controllers
     [Route("api/[controller]")]
     public class CharacterController : ControllerBase
     {
-        //private static Character knight = new Character();
-        private static List<Character> characters = new List<Character> {
-            new Character(),
-            new Character{Name = "Picachu" },
-            new Character{Name = "Spider-Man" }
-        };
+        private readonly ICharacterService _characterService;
+        public CharacterController(ICharacterService characterService)
+        {
+            this._characterService = characterService;
 
+        }
 
         [HttpGet]
-        public ActionResult<List<Character>> Get()
+        public async Task<ActionResult<ServiceResponse<List<Character>>>> Get()
         {
-            return Ok(characters);
+            return Ok(await _characterService.GetAllCharacters());
         }
 
         [HttpGet("GetCharacterById")]
-        public ActionResult<Character> GetCharacterById(int id)
+        //[Route("GetCharacterById")]
+        public async Task<ActionResult<ServiceResponse<Character>>> GetCharacterById(int id)
         {
-            if (id > characters.Count)
-            {
-                return BadRequest();
-            }
-            return Ok(characters[id]);
+            return Ok(await _characterService.GetCharacterById(id));
         }
 
-
+        [HttpPost("CreateCharacter")]
+        public async Task<ActionResult<ServiceResponse<List<Character>>>> CreateCharacter([FromBody] Character character)
+        {
+            //Console.WriteLine(character);
+            await _characterService.CreateNewCharacter(character);
+            return Ok();
+        }
     }
 }
