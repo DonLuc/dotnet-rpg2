@@ -40,5 +40,28 @@ namespace dotnet_rpg.Controllers
             var resp = await _characterService.CreateNewCharacter(character);
             return Ok(resp);
         }
+
+        [HttpPut("CreateCharacter")]
+        public async Task<ActionResult<ServiceResponse<List<AddCharacterDTO>>>> UpdateCharacter([FromBody] UpdateCharacterDTO character)
+        {
+            var resp = await _characterService.UpdateCharacter(character);
+            if (resp.Data == null)
+            {
+                return NotFound(resp);
+            }
+            return Ok(resp);
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDTO>>>> DeleteCharacter(int id)
+        {
+            var resp = await _characterService.DeleteCharacter(id);
+            if (resp.Data == null)
+            {
+                return NotFound(resp);
+            }
+            return Ok(resp);
+        }
     }
 }
